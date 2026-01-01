@@ -41,6 +41,6 @@ public class GameManager : MonoBehaviour
             Vector2.Distance(playerRb.position, masa.position) < mesafe
         );
 
-        Debug.Log("Masaya ulaþtýn! Tutorial bitti.");
+        Debug.Log("");
     }
 }
