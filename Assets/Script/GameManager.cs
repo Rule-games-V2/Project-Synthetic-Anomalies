@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 public class GameManager : MonoBehaviour
 {
@@ -10,7 +11,7 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        Debug.Log("[SÝSTEM]: Tiz Ses Seviyesi %100. Ethan Uyanýyor.");
+        Debug.Log("[Sï¿½STEM]: Tiz Ses Seviyesi %100. Ethan Uyanï¿½yor.");
         playerRb.simulated = false;
         playerMovement.canMove = false;
         StartCoroutine(ControlTutorial());
@@ -19,23 +20,23 @@ public class GameManager : MonoBehaviour
     IEnumerator ControlTutorial()
     {
         yield return new WaitForSeconds(3f);
-        Debug.Log("(W) Ýleri");
+        Debug.Log("(W) ï¿½leri");
         yield return new WaitForSeconds(3f);
         Debug.Log("(A) Sol");
         yield return new WaitForSeconds(3f);
         Debug.Log("(S) Geri");
         yield return new WaitForSeconds(3f);
-        Debug.Log("(D) Sað");
+        Debug.Log("(D) Saï¿½");
 
         playerRb.simulated = true;
         playerMovement.canMove = true;
-        Debug.Log("Þimdi A/D ile masaya git!");
+        Debug.Log("ï¿½imdi A/D ile masaya git!");
 
         yield return new WaitUntil(() =>
             Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D)
         );
 
-        Debug.Log("Masaya doðru ilerle...");
+        Debug.Log("Masaya doï¿½ru ilerle...");
 
         yield return new WaitUntil(() =>
             Vector2.Distance(playerRb.position, masa.position) < mesafe
