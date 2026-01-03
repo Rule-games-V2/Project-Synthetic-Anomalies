@@ -5,7 +5,6 @@ public class EthanCraneBasics : MonoBehaviour
 {
     public float moveSpeed = 5f;
     public bool canMove = true;
-
     private Rigidbody2D rb;
     private float moveInputX;
     private float moveInputY;
