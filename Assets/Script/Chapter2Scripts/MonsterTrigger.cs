@@ -11,7 +11,6 @@ public class MonsterTrigger : MonoBehaviour
             if (monster != null)
             {
                 monster.isMoving = true;
-                Debug.Log("Canavar tetiklendi!");
             }
         }
     }

@@ -103,4 +103,14 @@ public class GameManager : MonoBehaviour
         playerMovement.canMove = true;
     }
 
+    public IEnumerator InstantBedTeleport()
+    {
+        playerMovement.canMove = false;
+        playerRb.linearVelocity = Vector2.zero;
+
+        yield return new WaitForSeconds(0.1f);
+
+        playerTransform.position = bed.transform.position;
+        playerMovement.canMove = true;
+    }
 }

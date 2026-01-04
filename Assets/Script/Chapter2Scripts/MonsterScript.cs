@@ -25,4 +25,18 @@ public class MonsterController : MonoBehaviour
             transform.position += (Vector3)(moveDirection * currentSpeed * Time.deltaTime);
         }
     }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            GameManager gm = Object.FindFirstObjectByType<GameManager>();
+            if (gm != null)
+            {
+                gm.StartCoroutine("InstantBedTeleport");
+            }
+
+            Destroy(gameObject);
+        }
+    }
 }
