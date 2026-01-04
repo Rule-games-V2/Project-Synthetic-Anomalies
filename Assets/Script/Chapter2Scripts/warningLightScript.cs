@@ -1,8 +1,9 @@
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 public class warningLightScript : MonoBehaviour
 {
-private Light myLight;
+    private Light2D myLight;
     
     public float minIntensity = 0f;
     public float maxIntensity = 50f;
@@ -10,7 +11,7 @@ private Light myLight;
 
     void Start()
     {
-        myLight = GetComponent<Light>(); 
+        myLight = GetComponent<Light2D>(); 
     }
 
     void Update()
