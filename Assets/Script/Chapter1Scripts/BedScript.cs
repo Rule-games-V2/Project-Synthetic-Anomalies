@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class BedScript : MonoBehaviour
@@ -50,12 +51,24 @@ public class BedScript : MonoBehaviour
 
     public IEnumerator SequanceStarting()
     {
-        yield return new WaitForSeconds(4f);
+        yield return new WaitForSeconds(6f);
         if (isSleeping)
         {
             playerTransform.position = TeleportLocTransform.position;
             isSleeping = false;
             playerMovement.canMove = true;
+        }
+    }
+
+    public IEnumerator SequanceNightmare()
+    {
+        yield return new WaitForSeconds(4f);
+        float sayac = 0;
+        while (sayac < 4f)
+        {
+            playerTransform.Translate(Vector2.right * 4f * Time.deltaTime);
+            sayac += Time.deltaTime;
+            yield return null;
         }
     }
 }
