@@ -1,17 +1,19 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class BedScript : MonoBehaviour
 {
+    [Header("Transforms")]
     public Transform bedTransform;
-    public GameObject bed;
-    public GameObject player;
     public Transform playerTransform;
-    public EthanCraneBasics playerMovement;
     public Transform TeleportLocTransform;
-    bool playerInside = false;
-    bool isSleeping = false;
+
+    [Header("Scripts")]
+    public EthanCraneBasics playerMovement;
+    public float moveWarning;
+
+    private bool playerInside = false;
+    private bool isSleeping = false;
 
     void Update()
     {
@@ -35,40 +37,67 @@ public class BedScript : MonoBehaviour
 
     public void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Player"))
-        {
-            playerInside = true;
-        }
+        if (other.CompareTag("Player")) playerInside = true;
     }
 
     public void OnTriggerExit2D(Collider2D other)
     {
-        if (other.CompareTag("Player"))
-        {
-            playerInside = false;
-        }
+        if (other.CompareTag("Player")) playerInside = false;
     }
+
 
     public IEnumerator SequanceStarting()
     {
-        yield return new WaitForSeconds(6f);
+        yield return new WaitForSeconds(3f);
+
         if (isSleeping)
         {
             playerTransform.position = TeleportLocTransform.position;
-            isSleeping = false;
-            playerMovement.canMove = true;
+            StartCoroutine(SequanceNightmare());
         }
     }
 
     public IEnumerator SequanceNightmare()
     {
+        playerMovement.canMove = false;
+
         yield return new WaitForSeconds(4f);
+
         float sayac = 0;
-        while (sayac < 4f)
+        while (sayac < 2f)
         {
-            playerTransform.Translate(Vector2.right * 4f * Time.deltaTime);
+            playerTransform.Translate(Vector2.left * 3f * Time.deltaTime);
             sayac += Time.deltaTime;
             yield return null;
+        }
+
+        yield return new WaitForSeconds(1f);
+        Vector3 tempScale = playerTransform.localScale;
+        tempScale.x = 1f;
+        playerTransform.localScale = tempScale;
+
+        yield return new WaitForSeconds(1.5f);
+
+        tempScale.x = -1f;
+        playerTransform.localScale = tempScale;
+        yield return new WaitForSeconds(0.5f);
+
+        sayac = 0;
+        while (sayac < 4f)
+        {
+            playerTransform.Translate(Vector2.left * 4.5f * Time.deltaTime);
+            sayac += Time.deltaTime;
+            yield return null;
+        }
+
+        playerMovement.canSprint = true;
+
+        playerMovement.canMove = true;
+        isSleeping = false;
+        moveWarning = playerMovement.moveSpeed = 0f;
+        if (moveWarning <= 1)
+        {
+            Debug.Log("Canavardan Kaç [Shift]");
         }
     }
 }

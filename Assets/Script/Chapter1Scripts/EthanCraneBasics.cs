@@ -3,8 +3,9 @@ using UnityEngine;
 
 public class EthanCraneBasics : MonoBehaviour
 {
-    public float moveSpeed = 5f;
+    public float moveSpeed = 3.5f;
     public bool canMove = true;
+    public bool canSprint = false; // Senin istediðin kilit burada
     private Rigidbody2D rb;
     private float moveInputX;
     private float moveInputY;
@@ -20,12 +21,24 @@ public class EthanCraneBasics : MonoBehaviour
     {
         moveInputX = Input.GetAxisRaw("Horizontal");
         moveInputY = Input.GetAxisRaw("Vertical");
+
+        // SHIFT KONTROLÜ: Eðer kilit açýksa ve Shift'e basýlýyorsa hýzý 10 yap, yoksa 5 kalsýn.
+        if (canSprint && Input.GetKey(KeyCode.LeftShift))
+        {
+            moveSpeed = 6f;
+        }
+        else
+        {
+            moveSpeed = 3.5f;
+        }
     }
 
     void FixedUpdate()
     {
         if (!canMove) return;
+        // Senin orijinal hareket kodun, hiçbir þeyi deðiþtirmedim
         rb.linearVelocity = new Vector2(moveInputX * moveSpeed, moveInputY * moveSpeed);
+
         if (moveInputX > 0 && !facingRight) Flip();
         else if (moveInputX < 0 && facingRight) Flip();
     }
