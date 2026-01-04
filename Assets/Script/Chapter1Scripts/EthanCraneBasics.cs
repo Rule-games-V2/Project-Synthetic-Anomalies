@@ -25,7 +25,7 @@ public class EthanCraneBasics : MonoBehaviour
         // SHIFT KONTROLÜ: Eðer kilit açýksa ve Shift'e basýlýyorsa hýzý 10 yap, yoksa 5 kalsýn.
         if (canSprint && Input.GetKey(KeyCode.LeftShift))
         {
-            moveSpeed = 6f;
+            moveSpeed = 5f;
         }
         else
         {

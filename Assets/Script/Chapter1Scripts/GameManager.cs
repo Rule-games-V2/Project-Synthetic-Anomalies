@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    public wentScript wentScript;
     public Collider2D doorCollider;
     public int SadakatPuani = 0;
     public EthanCraneBasics playerMovement;
@@ -14,19 +15,15 @@ public class GameManager : MonoBehaviour
     public GameObject tableObj;
     bool hasTriggered = false;
     public BoxCollider2D bed;
-    public GameObject went;
-    public Transform wentTransform;
-    bool playerInside = false;
+
 
     void Start()
     {
-        went.GetComponent<BoxCollider2D>();
         Debug.Log("[SİSTEM]: Tiz Ses Seviyesi %100. Ethan Uyanıyor.");
         playerRb.simulated = false;
         bed.enabled = false;
         StartCoroutine(ControlTutorial());
     }
-
 
     IEnumerator ControlTutorial()
     {
@@ -106,23 +103,4 @@ public class GameManager : MonoBehaviour
         playerMovement.canMove = true;
     }
 
-    public void OnTriggerEnter2D(Collider2D other)
-    {
-        if (player.CompareTag("Player"))
-        {
-            Debug.Log("Havalandırmaya Saklan [E]");
-            if (playerInside && Input.GetKeyDown(KeyCode.E))
-            {
-                if (playerInside)
-                {
-                    playerTransform.position = wentTransform.position;
-                    playerMovement.canMove = false;
-                }
-                else
-                {
-                    playerMovement.canMove = true;
-                }
-            }
-        }
-    }
 }

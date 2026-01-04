@@ -48,7 +48,7 @@ public class BedScript : MonoBehaviour
 
     public IEnumerator SequanceStarting()
     {
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(5f);
 
         if (isSleeping)
         {
@@ -61,10 +61,8 @@ public class BedScript : MonoBehaviour
     {
         playerMovement.canMove = false;
 
-        yield return new WaitForSeconds(4f);
-
         float sayac = 0;
-        while (sayac < 2f)
+        while (sayac < 3f)
         {
             playerTransform.Translate(Vector2.left * 3f * Time.deltaTime);
             sayac += Time.deltaTime;
@@ -83,9 +81,9 @@ public class BedScript : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
 
         sayac = 0;
-        while (sayac < 4f)
+        while (sayac < 6f)
         {
-            playerTransform.Translate(Vector2.left * 4.5f * Time.deltaTime);
+            playerTransform.Translate(Vector2.left * 5f * Time.deltaTime);
             sayac += Time.deltaTime;
             yield return null;
         }
@@ -94,10 +92,7 @@ public class BedScript : MonoBehaviour
 
         playerMovement.canMove = true;
         isSleeping = false;
-        moveWarning = playerMovement.moveSpeed = 0f;
-        if (moveWarning <= 1)
-        {
-            Debug.Log("Canavardan Kaç [Shift]");
-        }
+        yield return new WaitForSeconds(1f);
+        Debug.Log("Hýzlan [Shift]");
     }
 }
