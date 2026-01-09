@@ -8,6 +8,7 @@ public class wentScript : MonoBehaviour
     public Transform bedTransform;
     public BoxCollider2D bedCollider;
 
+    public Collider2D playerCollider;
     private bool isPlayerInside = false;
     private GameObject playerObj;
     private bool isSequencing = false;
@@ -27,6 +28,7 @@ public class wentScript : MonoBehaviour
         var movement = playerObj.GetComponent<EthanCraneBasics>();
         var rb = playerObj.GetComponent<Rigidbody2D>();
 
+        if (playerCollider != null) playerCollider.enabled = false; // Canavar artýk deðemez
         if (movement != null) movement.canMove = false;
         if (rb != null) rb.linearVelocity = Vector2.zero;
 
@@ -36,6 +38,9 @@ public class wentScript : MonoBehaviour
         playerObj.transform.position = bedTransform.position;
         if (bedCollider != null) bedCollider.enabled = true;
         if (movement != null) movement.canMove = true;
+
+        Debug.Log("Victor: Uyandýðýný görüyorum Ethan. Kapý açýldý.");
+        yield return new WaitForSeconds(5f);
 
         isSequencing = false;
     }
@@ -47,6 +52,9 @@ public class wentScript : MonoBehaviour
             isPlayerInside = true;
             playerObj = other.gameObject;
             Debug.Log("Havalandýrmaya Saklan [E]");
+            isPlayerInside = true;
+            playerObj = other.gameObject;
+            playerCollider = other.GetComponent<Collider2D>();
         }
     }
 

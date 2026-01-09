@@ -35,7 +35,6 @@ public class MonsterController : MonoBehaviour
             {
                 gm.StartCoroutine("InstantBedTeleport");
             }
-
             Destroy(gameObject);
         }
     }
