@@ -27,7 +27,7 @@ public class GameManager : MonoBehaviour
 
     IEnumerator ControlTutorial()
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(4f);
         Debug.Log("(W) İleri");
         yield return new WaitForSeconds(1f);
         Debug.Log("(A) Sol");
@@ -77,7 +77,9 @@ public class GameManager : MonoBehaviour
                 bed.enabled = true;
                 Debug.Log("<Victor>: Dürüstlük Bağımızı güçlendirir Ethan.");
                 yield return new WaitForSeconds(1.3f);
+                Debug.Log("<Victor>: Kapı açıldı, Mira Koridorda Bekliyor ");
                 SadakatPuani += 8;
+                yield return new WaitForSeconds(1.3f);
                 Debug.Log("Sadakat '+8'");
                 yield return new WaitForSeconds(1.3f);
                 Debug.Log(" <= Yatağa Yat");
@@ -87,14 +89,14 @@ public class GameManager : MonoBehaviour
             {
                 bed.enabled = true;
                 doorCollider.enabled = !doorCollider.enabled;
-                Debug.Log("Nabzın yalan söylüyor Ethan, beni üzüyorsun.");
+                Debug.Log("Nabzın yalan söylüyor Ethan.");
                 yield return new WaitForSeconds(1.3f);
-                Debug.Log("Git biraz uyu");
+                Debug.Log("Sağlık kontrolün için sonra konuşacağız");
+                yield return new WaitForSeconds(1.3f);
+                Debug.Log("Tekrar geleceğim, Şimdi biraz uyu.");
                 yield return new WaitForSeconds(1.3f);
                 SadakatPuani -= 8;
                 Debug.Log("Sadakat '-8'");
-                yield return new WaitForSeconds(1.3f);
-                Debug.Log(" <= Yatağa Yat");
                 chosen = true;
             }
             yield return null;
