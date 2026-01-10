@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -18,7 +19,10 @@ public class GameManager : MonoBehaviour
 
     public Transform miraTransform;
     public GameObject enjektor;
-    public float corridorWalkSpeed = 1.5f;
+    public float corridorWalkSpeed = 1.0f;
+    public Transform finalDoorPoint;
+    public string nextSceneName;
+    public float interactionDistance = 1.5f;
 
     void Start()
     {
@@ -130,18 +134,18 @@ public class GameManager : MonoBehaviour
     {
         playerMovement.moveSpeed = corridorWalkSpeed;
 
-        yield return new WaitUntil(() => Vector2.Distance(playerTransform.position, miraTransform.position) < 1.2f);
+        yield return new WaitUntil(() => Vector2.Distance(playerTransform.position, miraTransform.position) < interactionDistance);
 
         playerMovement.canMove = false;
         playerRb.linearVelocity = Vector2.zero;
 
-        Debug.Log("<Mira>: 'Kalbin çok hızlı atıyor Ethan. Baban bunu almanı istiyor seni rahatlatacak.'");
+        Debug.Log("<Mira>: (Diz çöker) 'Kalbin çok hızlı atıyor Ethan. Baban bunu almanı istiyor seni rahatlatacak.'");
         if (enjektor != null) enjektor.SetActive(true);
 
-        yield return new WaitForSeconds(2f);
-        Debug.Log("<Victor>: 'Mira, vakit kaybediyoruz. Nabzını stabilize et ve bir sonraki odaya yönlendir.'");
+        yield return new WaitForSeconds(2.5f);
+        Debug.Log("<Victor - Hoparlör>: 'Mira, vakit kaybediyoruz. Nabzını stabilize et ve bir sonraki odaya yönlendir.'");
 
-        Debug.Log("Seçim: [Q] İtaat | [F] Red");
+        Debug.Log("KRİTİK SEÇİM: [Q] İtaat (Enjektörü kabul et) | [F] Red (Enjektörü it)");
 
         bool choiceMade = false;
         while (!choiceMade)
@@ -149,16 +153,16 @@ public class GameManager : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Q))
             {
                 SadakatPuani += 8;
-                Debug.Log("Sadakat +8. Ethan sakinleşti.");
+                Debug.Log("Ethan enjektörü kabul etti. Titreme durdu. Sadakat +8");
                 choiceMade = true;
             }
             else if (Input.GetKeyDown(KeyCode.F))
             {
                 SadakatPuani -= 8;
                 if (enjektor != null) enjektor.SetActive(false);
-                Debug.Log("Sadakat -8. Mira iğneyi sakladı.");
+                Debug.Log("Ethan iğneyi itti ve Mira'nın elini tuttu. Mira şaşırdı.");
                 yield return new WaitForSeconds(1f);
-                Debug.Log("<Victor>: 'Mira, onu içeri götür!'");
+                Debug.Log("<Victor>: 'Mira, onu test odasına götür!'");
                 choiceMade = true;
             }
             yield return null;
@@ -170,8 +174,11 @@ public class GameManager : MonoBehaviour
 
     IEnumerator FinalTransition()
     {
-        Debug.Log("Mira, Ethan'ı kapıdan içeri sokar.");
-        yield return new WaitForSeconds(2f);
-        Debug.Log("EKRAN KARARDI.");
+        playerMovement.canMove = false;
+        playerTransform.position = finalDoorPoint.position;
+        Debug.Log("Mira, Ethan'ı kapıdan içeri sokar. Kapı kapanır. EKRAN KARARDI.");
+
+        yield return new WaitForSeconds(3f);
+        SceneManager.LoadScene(nextSceneName);
     }
 }

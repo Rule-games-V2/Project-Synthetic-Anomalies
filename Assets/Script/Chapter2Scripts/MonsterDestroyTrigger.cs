@@ -2,13 +2,13 @@ using UnityEngine;
 
 public class MonsterDestroyTrigger : MonoBehaviour
 {
-    public GameObject Monster;
+    public GameObject monster;
 
-    public void OnTriggerEnter2D(Collider2D other)
+    void OnTriggerEnter2D(Collider2D other)
     {
-        if (Monster.CompareTag("other"))
+        if (other.gameObject == monster)
         {
-            Destroy(Monster);
+            Destroy(other.gameObject);
         }
     }
 }
