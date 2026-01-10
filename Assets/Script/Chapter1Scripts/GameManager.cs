@@ -16,6 +16,9 @@ public class GameManager : MonoBehaviour
     bool hasTriggered = false;
     public BoxCollider2D bed;
 
+    public Transform miraTransform;
+    public GameObject enjektor;
+    public float corridorWalkSpeed = 1.5f;
 
     void Start()
     {
@@ -118,7 +121,57 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(7f);
         doorCollider.enabled = true;
 
-        StartCoroutine(wentScript.SequenceExit());
+        yield return StartCoroutine(wentScript.SequenceExit());
+
+        StartCoroutine(StartConditioningCorridor());
     }
 
+    IEnumerator StartConditioningCorridor()
+    {
+        playerMovement.moveSpeed = corridorWalkSpeed;
+
+        yield return new WaitUntil(() => Vector2.Distance(playerTransform.position, miraTransform.position) < 1.2f);
+
+        playerMovement.canMove = false;
+        playerRb.linearVelocity = Vector2.zero;
+
+        Debug.Log("<Mira>: 'Kalbin çok hızlı atıyor Ethan. Baban bunu almanı istiyor seni rahatlatacak.'");
+        if (enjektor != null) enjektor.SetActive(true);
+
+        yield return new WaitForSeconds(2f);
+        Debug.Log("<Victor>: 'Mira, vakit kaybediyoruz. Nabzını stabilize et ve bir sonraki odaya yönlendir.'");
+
+        Debug.Log("Seçim: [Q] İtaat | [F] Red");
+
+        bool choiceMade = false;
+        while (!choiceMade)
+        {
+            if (Input.GetKeyDown(KeyCode.Q))
+            {
+                SadakatPuani += 8;
+                Debug.Log("Sadakat +8. Ethan sakinleşti.");
+                choiceMade = true;
+            }
+            else if (Input.GetKeyDown(KeyCode.F))
+            {
+                SadakatPuani -= 8;
+                if (enjektor != null) enjektor.SetActive(false);
+                Debug.Log("Sadakat -8. Mira iğneyi sakladı.");
+                yield return new WaitForSeconds(1f);
+                Debug.Log("<Victor>: 'Mira, onu içeri götür!'");
+                choiceMade = true;
+            }
+            yield return null;
+        }
+
+        yield return new WaitForSeconds(2f);
+        StartCoroutine(FinalTransition());
+    }
+
+    IEnumerator FinalTransition()
+    {
+        Debug.Log("Mira, Ethan'ı kapıdan içeri sokar.");
+        yield return new WaitForSeconds(2f);
+        Debug.Log("EKRAN KARARDI.");
+    }
 }
