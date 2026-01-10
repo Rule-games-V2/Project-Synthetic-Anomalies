@@ -17,12 +17,13 @@ public class GameManager : MonoBehaviour
     bool hasTriggered = false;
     public BoxCollider2D bed;
 
+    [Header("Kondisyon Koridoru Ayarları")]
     public Transform miraTransform;
     public GameObject enjektor;
     public float corridorWalkSpeed = 1.0f;
+    public float interactionDistance = 1.5f;
     public Transform finalDoorPoint;
     public string nextSceneName;
-    public float interactionDistance = 1.5f;
 
     void Start()
     {
@@ -89,13 +90,13 @@ public class GameManager : MonoBehaviour
                 yield return new WaitForSeconds(1.3f);
                 Debug.Log("Sadakat '+8'");
                 yield return new WaitForSeconds(1.3f);
-                Debug.Log(" <= Yatağa Yat");
+                doorCollider.enabled = true;
                 chosen = true;
             }
             else if (Input.GetKeyDown(KeyCode.F))
             {
                 bed.enabled = true;
-                doorCollider.enabled = !doorCollider.enabled;
+                doorCollider.enabled = false;
                 Debug.Log("Nabzın yalan söylüyor Ethan.");
                 yield return new WaitForSeconds(1.3f);
                 Debug.Log("Sağlık kontrolün için sonra konuşacağız");
@@ -123,26 +124,31 @@ public class GameManager : MonoBehaviour
         playerMovement.canMove = true;
 
         yield return new WaitForSeconds(7f);
-        doorCollider.enabled = true;
 
         yield return StartCoroutine(wentScript.SequenceExit());
+
+        doorCollider.enabled = true;
 
         StartCoroutine(StartConditioningCorridor());
     }
 
     IEnumerator StartConditioningCorridor()
     {
+        // Koridorda yavaş yürüme hızı
         playerMovement.moveSpeed = corridorWalkSpeed;
+        playerMovement.canMove = true;
 
+        // Mira'nın yanına gidene kadar bekle
         yield return new WaitUntil(() => Vector2.Distance(playerTransform.position, miraTransform.position) < interactionDistance);
 
         playerMovement.canMove = false;
         playerRb.linearVelocity = Vector2.zero;
 
-        Debug.Log("<Mira>: (Diz çöker) 'Kalbin çok hızlı atıyor Ethan. Baban bunu almanı istiyor seni rahatlatacak.'");
+        // Diyalog ve Etkileşim
+        Debug.Log("<Mira>: (Diz çöker) 'Kalbin çok hızlı atıyor Ethan. Baban Bunu Almanı istiyor seni rahatlatacak.'");
         if (enjektor != null) enjektor.SetActive(true);
 
-        yield return new WaitForSeconds(2.5f);
+        yield return new WaitForSeconds(2f);
         Debug.Log("<Victor - Hoparlör>: 'Mira, vakit kaybediyoruz. Nabzını stabilize et ve bir sonraki odaya yönlendir.'");
 
         Debug.Log("KRİTİK SEÇİM: [Q] İtaat (Enjektörü kabul et) | [F] Red (Enjektörü it)");
@@ -153,16 +159,20 @@ public class GameManager : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Q))
             {
                 SadakatPuani += 8;
-                Debug.Log("Ethan enjektörü kabul etti. Titreme durdu. Sadakat +8");
+                Debug.Log("[ETKİ]: Ekran anlık yumuşar, Ethan'ın titremesi durur.");
+
+                yield return new WaitForSeconds(1f);
+                Debug.Log("Sadakat +8");
                 choiceMade = true;
             }
             else if (Input.GetKeyDown(KeyCode.F))
             {
                 SadakatPuani -= 8;
-                if (enjektor != null) enjektor.SetActive(false);
-                Debug.Log("Ethan iğneyi itti ve Mira'nın elini tuttu. Mira şaşırdı.");
+                enjektor.SetActive(false);
+                Debug.Log("[ETKİ]: Mira şaşırır, iğneyi saklar. Victor: 'Mira, onu test odasına götür!'");
+
                 yield return new WaitForSeconds(1f);
-                Debug.Log("<Victor>: 'Mira, onu test odasına götür!'");
+                Debug.Log("Sadakat -8");
                 choiceMade = true;
             }
             yield return null;
@@ -174,11 +184,13 @@ public class GameManager : MonoBehaviour
 
     IEnumerator FinalTransition()
     {
-        playerMovement.canMove = false;
-        playerTransform.position = finalDoorPoint.position;
-        Debug.Log("Mira, Ethan'ı kapıdan içeri sokar. Kapı kapanır. EKRAN KARARDI.");
+        Debug.Log("Mira, Ethan'ı koridorun sonundaki kapıdan içeri sokar.");
+        if (finalDoorPoint != null) playerTransform.position = finalDoorPoint.position;
 
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(1f);
+        Debug.Log("EKRAN KARARDI.");
+
+        yield return new WaitForSeconds(2f);
         SceneManager.LoadScene(nextSceneName);
     }
 }
