@@ -10,10 +10,7 @@ public class MonsterController : MonoBehaviour
     public bool isMoving = false;
     private float currentSpeed;
 
-    void Start()
-    {
-        currentSpeed = startSpeed;
-    }
+    void Start() { currentSpeed = startSpeed; }
 
     void Update()
     {
@@ -33,7 +30,9 @@ public class MonsterController : MonoBehaviour
             GameManager gm = Object.FindFirstObjectByType<GameManager>();
             if (gm != null)
             {
-                gm.StartCoroutine("InstantBedTeleport");
+                // String yerine direkt Coroutine referansý ile çaðýrmak daha güvenlidir
+                gm.StopAllCoroutines(); // Çakýþan diðer diyaloglarý durdurur
+                gm.StartCoroutine(gm.InstantBedTeleport());
             }
             Destroy(gameObject);
         }

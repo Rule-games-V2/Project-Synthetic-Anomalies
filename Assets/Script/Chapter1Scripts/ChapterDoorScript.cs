@@ -23,12 +23,8 @@ public class ChapterDoorScript : MonoBehaviour
 
     private IEnumerator RunSequenceThenOpen(IEnumerator sequence)
     {
-        // WentScript içindeki sekansýn bitmesini bekle
         yield return StartCoroutine(sequence);
-
-        // Sekans bitti, kapýyý aç
         doorCollider.enabled = true;
-        Debug.Log("Kapý artýk kullanýlabilir.");
     }
 
     void Update()

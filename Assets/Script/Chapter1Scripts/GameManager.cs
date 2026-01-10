@@ -90,7 +90,7 @@ public class GameManager : MonoBehaviour
                 yield return new WaitForSeconds(1.3f);
                 Debug.Log("Sadakat '+8'");
                 yield return new WaitForSeconds(1.3f);
-                doorCollider.enabled = true;
+                Debug.Log(" <= Yatağa Yat");
                 chosen = true;
             }
             else if (Input.GetKeyDown(KeyCode.F))
@@ -109,7 +109,6 @@ public class GameManager : MonoBehaviour
             }
             yield return null;
         }
-        playerRb.linearVelocity = Vector2.zero;
         playerMovement.canMove = true;
     }
 
@@ -118,37 +117,33 @@ public class GameManager : MonoBehaviour
         playerMovement.canMove = false;
         playerRb.linearVelocity = Vector2.zero;
 
-        yield return new WaitForSeconds(0.1f);
+        yield return new WaitForSeconds(0.5f);
 
         playerTransform.position = bed.transform.position;
         playerMovement.canMove = true;
 
         yield return new WaitForSeconds(7f);
 
-        yield return StartCoroutine(wentScript.SequenceExit());
+        // EKSİK OLAN DİYALOG BURAYA EKLENDİ
+        Debug.Log("Victor: Uyandığını görüyorum Ethan. Kapı açıldı.");
 
         doorCollider.enabled = true;
-
         StartCoroutine(StartConditioningCorridor());
     }
 
     IEnumerator StartConditioningCorridor()
     {
-        // Koridorda yavaş yürüme hızı
         playerMovement.moveSpeed = corridorWalkSpeed;
-        playerMovement.canMove = true;
 
-        // Mira'nın yanına gidene kadar bekle
         yield return new WaitUntil(() => Vector2.Distance(playerTransform.position, miraTransform.position) < interactionDistance);
 
         playerMovement.canMove = false;
         playerRb.linearVelocity = Vector2.zero;
 
-        // Diyalog ve Etkileşim
-        Debug.Log("<Mira>: (Diz çöker) 'Kalbin çok hızlı atıyor Ethan. Baban Bunu Almanı istiyor seni rahatlatacak.'");
+        Debug.Log("<Mira>: (Diz çöker) 'Kalbin çok hızlı atıyor Ethan. Baban bunu almanı istiyor seni rahatlatacak.'");
         if (enjektor != null) enjektor.SetActive(true);
 
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(2.5f);
         Debug.Log("<Victor - Hoparlör>: 'Mira, vakit kaybediyoruz. Nabzını stabilize et ve bir sonraki odaya yönlendir.'");
 
         Debug.Log("KRİTİK SEÇİM: [Q] İtaat (Enjektörü kabul et) | [F] Red (Enjektörü it)");
@@ -159,20 +154,16 @@ public class GameManager : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Q))
             {
                 SadakatPuani += 8;
-                Debug.Log("[ETKİ]: Ekran anlık yumuşar, Ethan'ın titremesi durur.");
-
-                yield return new WaitForSeconds(1f);
-                Debug.Log("Sadakat +8");
+                Debug.Log("Ethan enjektörü kabul etti. Titreme durdu. Sadakat +8");
                 choiceMade = true;
             }
             else if (Input.GetKeyDown(KeyCode.F))
             {
                 SadakatPuani -= 8;
-                enjektor.SetActive(false);
-                Debug.Log("[ETKİ]: Mira şaşırır, iğneyi saklar. Victor: 'Mira, onu test odasına götür!'");
-
+                if (enjektor != null) enjektor.SetActive(false);
+                Debug.Log("Ethan iğneyi itti ve Mira'nın elini tuttu. Mira şaşırdı.");
                 yield return new WaitForSeconds(1f);
-                Debug.Log("Sadakat -8");
+                Debug.Log("<Victor>: 'Mira, onu test odasına götür!'");
                 choiceMade = true;
             }
             yield return null;
@@ -184,13 +175,11 @@ public class GameManager : MonoBehaviour
 
     IEnumerator FinalTransition()
     {
-        Debug.Log("Mira, Ethan'ı koridorun sonundaki kapıdan içeri sokar.");
+        playerMovement.canMove = false;
         if (finalDoorPoint != null) playerTransform.position = finalDoorPoint.position;
+        Debug.Log("Mira, Ethan'ı kapıdan içeri sokar. Kapı kapanır. EKRAN KARARDI.");
 
-        yield return new WaitForSeconds(1f);
-        Debug.Log("EKRAN KARARDI.");
-
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(3f);
         SceneManager.LoadScene(nextSceneName);
     }
 }
