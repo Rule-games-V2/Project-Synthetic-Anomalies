@@ -39,10 +39,11 @@ public class wentScript : MonoBehaviour
         if (bedCollider != null) bedCollider.enabled = true;
         if (movement != null) movement.canMove = true;
 
+        yield return new WaitForSeconds(7f);
         Debug.Log("Victor: Uyandýðýný görüyorum Ethan. Kapý açýldý.");
-        yield return new WaitForSeconds(5f);
 
         isSequencing = false;
+        playerCollider.enabled = true;
     }
 
     private void OnTriggerEnter2D(Collider2D other)

@@ -114,5 +114,11 @@ public class GameManager : MonoBehaviour
 
         playerTransform.position = bed.transform.position;
         playerMovement.canMove = true;
+
+        yield return new WaitForSeconds(7f);
+        doorCollider.enabled = true;
+
+        StartCoroutine(wentScript.SequenceExit());
     }
+
 }

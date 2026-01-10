@@ -1,40 +1,64 @@
-using System.Collections;
 using UnityEngine;
+using System.Collections;
 
 public class ChapterDoorScript : MonoBehaviour
 {
-    public Transform nightmareTeleportLoc; // Kabus baþlangýcý
-    public Transform corridorTeleportLoc;  // Normal koridor baþlangýcý
+    public Collider2D doorCollider;     // Kapýnýn Collider'ý (Baþta kapalý olmalý)
     public Transform playerTransform;
+    public Transform corridorTeleportLoc;
 
-    // Seçim verisini buradan kontrol edeceðiz
-    public bool isHonest = false;
-    public bool isLying = false;
+    private bool canInteract = false;
+
+    void Start()
+    {
+        // Baþlangýçta kapý kapalý
+        if (doorCollider != null) doorCollider.enabled = false;
+    }
+
+    // WentScript'ten bu fonksiyon çaðrýlacak
+    public void StartDoorProcess(IEnumerator sequence)
+    {
+        StartCoroutine(RunSequenceThenOpen(sequence));
+    }
+
+    private IEnumerator RunSequenceThenOpen(IEnumerator sequence)
+    {
+        // WentScript içindeki sekansýn bitmesini bekle
+        yield return StartCoroutine(sequence);
+
+        // Sekans bitti, kapýyý aç
+        doorCollider.enabled = true;
+        Debug.Log("Kapý artýk kullanýlabilir.");
+    }
+
+    void Update()
+    {
+        if (canInteract && Input.GetKeyDown(KeyCode.E))
+        {
+            Teleport();
+        }
+    }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
         {
-            // Sadece bir seçim yapýldýysa etkileþime izin ver
-            if (isHonest || isLying)
-            {
-                Debug.Log("Devam Et [E]");
-                StartCoroutine(WaitPressE());
-            }
+            canInteract = true;
+            Debug.Log("Çýk [E]");
         }
     }
 
-    public IEnumerator WaitPressE()
+    private void OnTriggerExit2D(Collider2D other)
     {
-        yield return new WaitUntil(() => Input.GetKeyDown(KeyCode.E));
+        if (other.CompareTag("Player"))
+        {
+            canInteract = false;
+        }
+    }
 
-        if (isLying)
-        {
-            playerTransform.position = nightmareTeleportLoc.position;
-        }
-        else if (isHonest)
-        {
-            playerTransform.position = corridorTeleportLoc.position;
-        }
+    private void Teleport()
+    {
+        playerTransform.position = corridorTeleportLoc.position;
+        canInteract = false;
     }
 }

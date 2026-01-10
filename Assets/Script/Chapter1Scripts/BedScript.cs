@@ -10,10 +10,15 @@ public class BedScript : MonoBehaviour
 
     [Header("Scripts")]
     public EthanCraneBasics playerMovement;
-    public float moveWarning;
+    private Rigidbody2D rb; // Sadece hýz sýfýrlamak için
 
     private bool playerInside = false;
     private bool isSleeping = false;
+
+    void Start()
+    {
+        rb = playerTransform.GetComponent<Rigidbody2D>();
+    }
 
     void Update()
     {
@@ -23,6 +28,9 @@ public class BedScript : MonoBehaviour
 
             if (isSleeping)
             {
+                // KAYMAYI ÖNLEYEN KISIM:
+                if (rb != null) rb.linearVelocity = Vector2.zero;
+
                 playerTransform.position = bedTransform.position;
                 playerMovement.canMove = false;
                 StartCoroutine(SequanceStarting());
@@ -44,7 +52,6 @@ public class BedScript : MonoBehaviour
     {
         if (other.CompareTag("Player")) playerInside = false;
     }
-
 
     public IEnumerator SequanceStarting()
     {
@@ -89,10 +96,9 @@ public class BedScript : MonoBehaviour
         }
 
         playerMovement.canSprint = true;
-
         playerMovement.canMove = true;
         isSleeping = false;
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.5f);
         Debug.Log("Hýzlan [Shift]");
     }
 }
