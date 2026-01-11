@@ -7,6 +7,7 @@ public class wentScript : MonoBehaviour
     public Transform wentTargetTransform;
     public Transform bedTransform;
     public BoxCollider2D bedCollider;
+    public ChapterDoorScript doorScript;
 
     public Collider2D playerCollider;
     private bool isPlayerInside = false;
@@ -60,9 +61,13 @@ public class wentScript : MonoBehaviour
         if (movement != null) movement.canMove = true;
 
         yield return new WaitForSeconds(7f);
-        Debug.Log("Victor: Uyandýðýný görüyorum Ethan. Kapý açýldý.");
+        Debug.Log("Victor: Uyandýðýný görüyorum Ethan.");
+        yield return new WaitForSeconds(2f);
+        Debug.Log("Kapý açýldý.");
 
         isSequencing = false;
+        yield return new WaitForSeconds(3f);
+        doorScript.doorCollider.enabled = true;
         if (playerCollider != null) playerCollider.enabled = true;
     }
 

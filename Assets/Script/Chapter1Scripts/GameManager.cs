@@ -16,6 +16,7 @@ public class GameManager : MonoBehaviour
     public GameObject tableObj;
     bool hasTriggered = false;
     public BoxCollider2D bed;
+    public bool endNightmareSeq = false;
 
     [Header("Kondisyon Koridoru Ayarları")]
     public Transform miraTransform;
@@ -86,6 +87,8 @@ public class GameManager : MonoBehaviour
                 Debug.Log("<Victor>: Dürüstlük Bağımızı güçlendirir Ethan.");
                 yield return new WaitForSeconds(1.3f);
                 Debug.Log("<Victor>: Kapı açıldı, Mira Koridorda Bekliyor ");
+                yield return new WaitForSeconds(1f);
+                Debug.Log("Sadakat +8");
                 SadakatPuani += 8;
                 chosen = true;
                 playerMovement.canMove = true;
@@ -100,7 +103,11 @@ public class GameManager : MonoBehaviour
                 Debug.Log("Sağlık kontrolün için sonra konuşacağız");
                 yield return new WaitForSeconds(1.3f);
                 Debug.Log("Tekrar geleceğim, Şimdi biraz uyu.");
+                yield return new WaitForSeconds(1f);
+                Debug.Log("Sadakat -8");
                 SadakatPuani -= 8;
+                yield return new WaitForSeconds(1f);
+                Debug.Log(" <== Yataga Yat");
                 chosen = true;
                 playerMovement.canMove = true;
                 StartCoroutine(WaitForBedInteraction());
@@ -117,14 +124,21 @@ public class GameManager : MonoBehaviour
 
     public IEnumerator InstantBedTeleport()
     {
-        playerMovement.canMove = false;
-        playerRb.linearVelocity = Vector2.zero;
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitUntil(() => endNightmareSeq == true);
+
         playerTransform.position = bed.transform.position;
-        yield return new WaitForSeconds(7f);
-        Debug.Log("Victor: Uyandığını görüyorum Ethan. Kapı açıldı. Mira koridorda seni bekliyor.");
-        doorCollider.enabled = true;
+
+        playerRb.simulated = true;
+        playerRb.linearVelocity = Vector2.zero;
         playerMovement.canMove = true;
+        doorCollider.enabled = true;
+        bed.enabled = false;
+
+        yield return new WaitForSeconds(5f);
+
+        Debug.Log("Victor: Uyandığını görüyorum Ethan.");
+        yield return new WaitForSeconds(3f);
+        Debug.Log("Kapı açıldı.");
         StartCoroutine(StartConditioningCorridor());
     }
 
@@ -178,32 +192,25 @@ public class GameManager : MonoBehaviour
         playerRb.simulated = false;
         corridorWalkSpeed = 4f;
 
-        // 1. AŞAMA: Yatayda kapı hizasına kadar yürü (Çizgi üzerinden gitme)
         while (Mathf.Abs(playerTransform.position.x - finalDoorPoint.position.x) > 0.05f)
         {
             float step = corridorWalkSpeed * Time.deltaTime;
-
-            // Ethan yatayda ilerler
             float newPlayerX = Mathf.MoveTowards(playerTransform.position.x, finalDoorPoint.position.x, step);
             playerTransform.position = new Vector3(newPlayerX, playerTransform.position.y, playerTransform.position.z);
-
-            // Mira, Ethan'ın arkasından (0.6f ofsetle) yatayda takip eder
             float newMiraX = Mathf.MoveTowards(miraTransform.position.x, finalDoorPoint.position.x + 0.6f, step);
             miraTransform.position = new Vector3(newMiraX, miraTransform.position.y, miraTransform.position.z);
-
             yield return null;
         }
 
-        // 2. AŞAMA: Kapı hizasına gelince kapının olduğu asıl düzleme (yukarı/içeri) yönel
         while (Vector2.Distance(playerTransform.position, finalDoorPoint.position) > 0.05f)
         {
             corridorWalkSpeed = 6f;
             playerTransform.position = Vector2.MoveTowards(playerTransform.position, finalDoorPoint.position, corridorWalkSpeed * Time.deltaTime);
-            miraTransform.position = Vector2.MoveTowards(miraTransform.position, finalDoorPoint.position + new Vector3(0.4f, 0, 0), corridorWalkSpeed* Time.deltaTime);
+            miraTransform.position = Vector2.MoveTowards(miraTransform.position, finalDoorPoint.position + new Vector3(0.4f, 0, 0), corridorWalkSpeed * Time.deltaTime);
             yield return null;
         }
 
-       yield return new WaitForSeconds(6f);
-       SceneManager.LoadScene(nextSceneName);
+        yield return new WaitForSeconds(6f);
+        SceneManager.LoadScene(nextSceneName);
     }
 }
