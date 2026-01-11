@@ -142,7 +142,7 @@ public class GameManager : MonoBehaviour
         StartCoroutine(StartConditioningCorridor());
     }
 
-    IEnumerator StartConditioningCorridor()
+    public IEnumerator StartConditioningCorridor()
     {
         playerMovement.moveSpeed = corridorWalkSpeed;
         yield return new WaitUntil(() => Vector2.Distance(playerTransform.position, miraTransform.position) < interactionDistance);
