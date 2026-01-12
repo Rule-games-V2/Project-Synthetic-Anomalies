@@ -67,7 +67,7 @@ public class BedScript : MonoBehaviour
             yield return null;
         }
 
-        yield return new WaitForSeconds(5f);
+        yield return new WaitForSeconds(2f);
         Vector3 tempScale = playerTransform.localScale;
         tempScale.x = 1f;
         playerTransform.localScale = tempScale;
