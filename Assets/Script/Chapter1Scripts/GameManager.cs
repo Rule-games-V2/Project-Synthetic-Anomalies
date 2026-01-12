@@ -151,16 +151,18 @@ public class GameManager : MonoBehaviour
         playerMovement.canMove = false;
         playerRb.linearVelocity = Vector2.zero;
 
+        yield return new WaitForSeconds(3f);
         Debug.Log("<Mira>: 'Kalbin çok hızlı atıyor Ethan.");
         yield return new WaitForSeconds(2f);
-        Debug.Log(" Baban bunu almanı istiyor seni rahatlatacak.'");
+        Debug.Log("Baban bunu almanı istiyor seni rahatlatacak.'");
         if (enjektor != null) enjektor.SetActive(true);
 
         yield return new WaitForSeconds(2.5f);
         Debug.Log("<Victor - Hoparlör>: 'Mira, vakit kaybediyoruz. Nabzını stabilize et ve bir sonraki odaya yönlendir.'");
         yield return new WaitForSeconds(2f);
 
-        Debug.Log("KRİTİK SEÇİM: [Q] İtaat | [F] Red");
+        Debug.Log("[Q] Sakinleş");
+        Debug.Log("[F] Reddet");
 
         bool choiceMade = false;
         while (!choiceMade)
@@ -169,6 +171,8 @@ public class GameManager : MonoBehaviour
             {
                 SadakatPuani += 8;
                 choiceMade = true;
+                yield return new WaitForSeconds(8f);
+                SceneManager.LoadScene(nextSceneName);
             }
             else if (Input.GetKeyDown(KeyCode.F))
             {
@@ -179,12 +183,11 @@ public class GameManager : MonoBehaviour
                 yield return new WaitForSeconds(2f);
                 Debug.Log("<Mira>: 'Ah Ethan...'");
                 choiceMade = true;
+                yield return new WaitForSeconds(1f);
+                StartCoroutine(FinalTransition());
             }
             yield return null;
         }
-
-        yield return new WaitForSeconds(1f);
-        StartCoroutine(FinalTransition());
     }
 
     IEnumerator FinalTransition()
@@ -211,7 +214,7 @@ public class GameManager : MonoBehaviour
             yield return null;
         }
 
-        yield return new WaitForSeconds(6f);
+        yield return new WaitForSeconds(5f);
         SceneManager.LoadScene(nextSceneName);
     }
 }
