@@ -1,15 +1,13 @@
 using UnityEngine;
 
-public class SimpleLaneLaser : MonoBehaviour
+public class SmartLaneLaser : MonoBehaviour
 {
     [Header("Hareket Ayarlarý")]
-    public float moveSpeed = 2f;     // Saða sola gidiþ hýzý
-    public float moveDistance = 3f;  // Gidiþ mesafesi
-    public float offset = 0f;        // Lazerlerin senkronunu bozmak için
-
+    public float moveSpeed = 2f;
+    public float moveDistance = 5f;
+    public float offset = 0f;
     private Vector3 startPos;
 
-    [Header("Victor Replikleri")]
     private string[] victorQuotes = {
         "Hassasiyetin zayýf Ethan. Tekrar dene.",
         "Zaman kaybediyoruz, odaklan!",
@@ -26,25 +24,21 @@ public class SimpleLaneLaser : MonoBehaviour
 
     void Update()
     {
-        // Sadece X ekseninde sakin bir ping-pong hareketi
+        // Görseldeki gibi saða-sola sakin ve gergin gidiþ
         float newX = Mathf.PingPong((Time.time + offset) * moveSpeed, moveDistance);
         transform.position = startPos + new Vector3(newX, 0, 0);
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        // Katmanlar (Layers) doðru ayarlandýysa, sadece kendi þeridindeki Ethan'a çarpar
+        // Katman matrisini ayarladýðýn için bu lazer 
+        // sadece kendi kulvarýndaki objeyi algýlayacak.
         if (other.CompareTag("Player") || other.CompareTag("Block"))
         {
-            HandleFailure();
+            string quote = victorQuotes[Random.Range(0, victorQuotes.Length)];
+            Debug.Log("<color=red>Victor:</color> " + quote);
+
+            // Sahne reset veya pozisyon resetleme fonksiyonun buraya gelmeli
         }
-    }
-
-    void HandleFailure()
-    {
-        string quote = victorQuotes[Random.Range(0, victorQuotes.Length)];
-        Debug.Log("<color=red>Victor:</color> " + quote);
-
-        // Buraya Ethan'ý baþlangýca ýþýnlama kodunu ekleyeceðiz.
     }
 }
