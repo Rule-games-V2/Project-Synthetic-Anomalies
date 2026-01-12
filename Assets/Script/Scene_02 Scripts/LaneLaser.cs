@@ -1,11 +1,11 @@
 using UnityEngine;
 
-public class LaneLaser : MonoBehaviour
+public class SimpleLaneLaser : MonoBehaviour
 {
     [Header("Hareket Ayarlarý")]
-    public float moveDistance = 4f;
-    public float speed = 2f;
-    public float offset = 0f; // Her lazerin farklý zamanlamayla baþlamasý için
+    public float moveSpeed = 2f;     // Saða sola gidiþ hýzý
+    public float moveDistance = 3f;  // Gidiþ mesafesi
+    public float offset = 0f;        // Lazerlerin senkronunu bozmak için
 
     private Vector3 startPos;
 
@@ -26,14 +26,14 @@ public class LaneLaser : MonoBehaviour
 
     void Update()
     {
-        // (Time.time + offset) kullanarak her lazerin döngüsünü kaydýrdýk
-        float newY = Mathf.PingPong((Time.time + offset) * speed, moveDistance);
-        transform.position = startPos + new Vector3(0, newY, 0);
+        // Sadece X ekseninde sakin bir ping-pong hareketi
+        float newX = Mathf.PingPong((Time.time + offset) * moveSpeed, moveDistance);
+        transform.position = startPos + new Vector3(newX, 0, 0);
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        // Lazer Ethan'a veya bloða deðerse hata tetiklenir
+        // Katmanlar (Layers) doðru ayarlandýysa, sadece kendi þeridindeki Ethan'a çarpar
         if (other.CompareTag("Player") || other.CompareTag("Block"))
         {
             HandleFailure();
@@ -45,6 +45,6 @@ public class LaneLaser : MonoBehaviour
         string quote = victorQuotes[Random.Range(0, victorQuotes.Length)];
         Debug.Log("<color=red>Victor:</color> " + quote);
 
-        // Reset iþlemi burada tetiklenecek
+        // Buraya Ethan'ý baþlangýca ýþýnlama kodunu ekleyeceðiz.
     }
 }
