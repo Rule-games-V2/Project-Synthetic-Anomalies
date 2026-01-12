@@ -30,10 +30,8 @@ public class MonsterController : MonoBehaviour
             GameManager gm = Object.FindFirstObjectByType<GameManager>();
             if (gm != null)
             {
-                // KRÝTÝK EKSÝK BURASIYDI: Þalteri indiriyoruz!
                 gm.endNightmareSeq = true;
 
-                // Mevcut coroutine'i durdurup temizce baþtan baþlatýyoruz
                 gm.StopAllCoroutines();
                 gm.StartCoroutine(gm.InstantBedTeleport());
             }

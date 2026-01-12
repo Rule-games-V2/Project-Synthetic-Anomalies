@@ -131,7 +131,6 @@ public class GameManager : MonoBehaviour
         playerRb.simulated = true;
         playerRb.linearVelocity = Vector2.zero;
         playerMovement.canMove = true;
-        doorCollider.enabled = true;
         bed.enabled = false;
 
         yield return new WaitForSeconds(5f);
@@ -139,6 +138,8 @@ public class GameManager : MonoBehaviour
         Debug.Log("Victor: Uyandığını görüyorum Ethan.");
         yield return new WaitForSeconds(3f);
         Debug.Log("Kapı açıldı.");
+        yield return new WaitForSeconds(3f);
+        doorCollider.enabled = true;
         StartCoroutine(StartConditioningCorridor());
     }
 
