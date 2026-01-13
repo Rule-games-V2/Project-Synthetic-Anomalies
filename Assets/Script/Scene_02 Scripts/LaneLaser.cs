@@ -112,6 +112,16 @@ public class FinalChapterLaser : MonoBehaviour
         }
     }
 
+    public class Slot
+    {
+        public bool isOccupied = false; // Yuva dolu mu?
+
+        public void SetOccupied(bool state)
+        {
+            isOccupied = state;
+        }
+    }
+
     private void OnTriggerEnter2D(Collider2D other)
     {
         // Ethan veya blok deðerse her þey baþa döner.
@@ -122,6 +132,7 @@ public class FinalChapterLaser : MonoBehaviour
             Debug.Log("<color=red>Victor:</color> " + quote);
 
             SpManager.SadakatPuani -= 1;
+            Debug.Log(SpManager.SadakatPuani);
 
             // Ethan'ý baþlangýca salla.
             if (player != null && resetPoint != null)
