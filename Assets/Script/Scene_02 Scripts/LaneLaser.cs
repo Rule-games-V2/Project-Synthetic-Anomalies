@@ -7,14 +7,16 @@ public class SmartLaneLaser : MonoBehaviour
     public float moveDistance = 5f;
     public float offset = 0f;
     private Vector3 startPos;
+    public Transform player;
+    public Transform SafeLimitLocation;
 
     private string[] victorQuotes = {
-        "Hassasiyetin zayýf Ethan. Tekrar dene.",
+        "Hassasiyetin zayýf Ethan.",
         "Zaman kaybediyoruz, odaklan!",
         "Hayal kýrýklýðý... Tekrar baþla.",
         "Vücudun zihninden daha yavaþ hareket ediyor.",
-        "Veri akýþýný bozuyorsun, stabil kal!",
-        "Sistem hata kabul etmez."
+        "Hadi Ethan...",
+        "Tekrar dene."
     };
 
     void Start()
@@ -38,7 +40,7 @@ public class SmartLaneLaser : MonoBehaviour
             string quote = victorQuotes[Random.Range(0, victorQuotes.Length)];
             Debug.Log("<color=red>Victor:</color> " + quote);
 
-            // Sahne reset veya pozisyon resetleme fonksiyonun buraya gelmeli
+            SafeLimitLocation.position = player.position;
         }
     }
 }
