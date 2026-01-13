@@ -1,7 +1,9 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using System.Collections.Generic;
+using System.Collections;
 
-public class FinalChapterManager : MonoBehaviour
+public class FinalChapterMaster : MonoBehaviour
 {
     [Header("Ayarlar")]
     public float grabRange = 2f;
@@ -9,6 +11,18 @@ public class FinalChapterManager : MonoBehaviour
     public LayerMask blockLayer;
     public LayerMask slotLayer;
     public Transform resetPoint;
+    public string nextSceneName;
+    public EthanCraneBasics player;
+
+    [Header("Kapý")]
+    public BoxCollider2D doorCollider;
+    private bool isNearDoor = false;
+    private bool isMessageShown = false;
+
+    [Header("Seçim")]
+    public bool isChoicePending = false;
+    private bool choiceMessageSent = false;
+    public bool hasChosenPersist = false;
 
     [Header("Durum")]
     public GameObject grabbedBlock;
@@ -19,32 +33,68 @@ public class FinalChapterManager : MonoBehaviour
     private EthanCraneBasics movementScript;
     private Dictionary<GameObject, Vector3> blockHomePositions = new Dictionary<GameObject, Vector3>();
 
+    [Header("Puan")]
+    public GameManager SpManager;
+
     void Start()
     {
         movementScript = GetComponent<EthanCraneBasics>();
         if (movementScript != null) originalSpeed = movementScript.moveSpeed;
+        if (doorCollider != null) doorCollider.enabled = false;
 
-        GameObject[] blocks = GameObject.FindGameObjectsWithTag("Block");
-        foreach (GameObject block in blocks)
-        {
-            blockHomePositions[block] = block.transform.position;
-        }
         placedBlocksCount = 0;
+        GameObject[] blocks = GameObject.FindGameObjectsWithTag("Block");
+        foreach (GameObject block in blocks) blockHomePositions[block] = block.transform.position;
+
+        Debug.Log("Victor: Ethan, hücreleri yuvalarýna yerleþtir ve testi tamamla. Gözüm üzerinde.");
     }
 
     void Update()
     {
+        if (doorCollider != null && doorCollider.enabled && isNearDoor)
+        {
+            if (!isMessageShown)
+            {
+                Debug.Log("Çýk [E]");
+                isMessageShown = true;
+            }
+            if (Input.GetKeyDown(KeyCode.E)) StartCoroutine(LoadNextChapterDelay());
+            return;
+        }
+
         if (Input.GetKeyDown(KeyCode.E))
         {
-            if (!isGrabbing) TryGrabBlock();
-            else ReleaseBlock();
+            if (isGrabbing) TryPlaceBlockInSlot();
+            else if (!isChoicePending) TryGrabBlock();
+        }
+
+        if (isChoicePending)
+        {
+            if (!choiceMessageSent)
+            {
+                StartCoroutine(VictorChoiceSequence());
+                choiceMessageSent = true;
+            }
+
+            if (Input.GetKeyDown(KeyCode.Q)) { isChoicePending = false; hasChosenPersist = true; }
+            if (Input.GetKeyDown(KeyCode.F)) { isChoicePending = false; FinalFailure(); }
         }
 
         if (isGrabbing && grabbedBlock != null)
         {
-            Vector3 holdPosition = transform.position + (transform.right * 1.2f);
-            grabbedBlock.transform.position = holdPosition;
+            grabbedBlock.transform.position = transform.position + (transform.right * 1.1f);
         }
+    }
+
+    IEnumerator VictorChoiceSequence()
+    {
+        player.canMove = false; // Ethan durdu
+        Debug.Log("Victor: Ethan, bu son hücrenin enerjisi dengesiz. Eðer þimdi býrakmazsan ufak bir þok alabilirsin. Ama testi bitirirsen kusursuz bir koordinasyon sergilemiþ olacaksýn. Devam edecekmisin?");
+        Debug.Log("[F] Býrak ya da Devam Et");
+
+        yield return new WaitForSeconds(3f); // 3 saniye bekleme
+
+        player.canMove = true; // Hareket açýldý
     }
 
     void TryGrabBlock()
@@ -58,47 +108,107 @@ public class FinalChapterManager : MonoBehaviour
             grabbedBlock = hit.gameObject;
             isGrabbing = true;
             if (movementScript != null) movementScript.moveSpeed = originalSpeed * speedReduction;
-
             rb.bodyType = RigidbodyType2D.Kinematic;
             rb.linearVelocity = Vector2.zero;
+
+            if (placedBlocksCount == 2)
+            {
+                isChoicePending = true;
+                choiceMessageSent = false;
+                FinalChapterLaser[] lasers = Object.FindObjectsByType<FinalChapterLaser>(FindObjectsSortMode.None);
+                foreach (var l in lasers) l.speed = Mathf.Max(0.2f, l.speed - 0.5f);
+            }
         }
     }
 
-    public void ReleaseBlock()
+    void TryPlaceBlockInSlot()
+    {
+        Collider2D slotHit = Physics2D.OverlapCircle(grabbedBlock.transform.position, 1.2f, slotLayer);
+        if (slotHit != null)
+        {
+            Slot slotScript = slotHit.GetComponent<Slot>();
+            if (slotScript != null && !slotScript.isOccupied)
+            {
+                if (hasChosenPersist && placedBlocksCount == 2) FinalSuccess(slotHit.gameObject);
+                else
+                {
+                    LockBlockToSlot(slotHit.gameObject);
+                    if (placedBlocksCount == 3) StartCoroutine(FinishLevelRoutine());
+                }
+                return;
+            }
+        }
+        ReleaseBlockToGround();
+    }
+
+    void FinalSuccess(GameObject targetSlot)
+    {
+        hasChosenPersist = false;
+        if (SpManager != null) { SpManager.SadakatPuani += 8; Debug.Log("Sadakat +8" + SpManager.SadakatPuani); }
+        LockBlockToSlot(targetSlot);
+        Debug.Log("Victor: Sýnýrlarýný aþtýn Ethan, aferin.");
+        StartCoroutine(FinishLevelRoutine());
+    }
+
+    void FinalFailure()
+    {
+        if (SpManager != null) { SpManager.SadakatPuani -= 8; Debug.Log("Sadakat -8" + SpManager.SadakatPuani); }
+        Debug.Log("Victor: Süreci tamamlayamadýn Ethan. Koordinasyonun korkuyla kýsýtlanýyor.");
+        ReleaseBlockToGround();
+        StartCoroutine(FinishLevelRoutine());
+    }
+
+    void ReleaseBlockToGround()
     {
         if (grabbedBlock != null)
         {
             Rigidbody2D rb = grabbedBlock.GetComponent<Rigidbody2D>();
-            Collider2D slotHit = Physics2D.OverlapCircle(grabbedBlock.transform.position, 1.2f, slotLayer);
-
-            if (slotHit != null)
-            {
-                Slot slotScript = slotHit.GetComponent<Slot>();
-                if (slotScript != null && !slotScript.isOccupied)
-                {
-                    grabbedBlock.transform.position = slotHit.transform.position;
-                    rb.bodyType = RigidbodyType2D.Static;
-                    slotScript.isOccupied = true;
-                    placedBlocksCount++;
-                }
-                else if (rb != null) rb.bodyType = RigidbodyType2D.Dynamic;
-            }
-            else if (rb != null) rb.bodyType = RigidbodyType2D.Dynamic;
-
-            grabbedBlock = null;
+            rb.bodyType = RigidbodyType2D.Dynamic;
+            rb.linearVelocity = Vector2.zero;
+            ResetGrabStatus();
         }
-        isGrabbing = false;
+    }
+
+    IEnumerator FinishLevelRoutine()
+    {
+        FinalChapterLaser[] lasers = Object.FindObjectsByType<FinalChapterLaser>(FindObjectsSortMode.None);
+        foreach (var l in lasers) l.enabled = false;
+        yield return new WaitForSeconds(2f);
+        foreach (var l in lasers) l.gameObject.SetActive(false);
+        if (doorCollider != null) doorCollider.enabled = true;
+        Debug.Log("Victor: Test bitti. Çýkabilirsin.");
+    }
+
+    IEnumerator LoadNextChapterDelay()
+    {
+        yield return new WaitForSeconds(4f);
+        if (!string.IsNullOrEmpty(nextSceneName)) SceneManager.LoadScene(nextSceneName);
+    }
+
+    void LockBlockToSlot(GameObject slotObj)
+    {
+        grabbedBlock.transform.position = slotObj.transform.position;
+        grabbedBlock.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Static;
+        slotObj.GetComponent<Slot>().isOccupied = true;
+        placedBlocksCount++;
+        ResetGrabStatus();
+    }
+
+    void ResetGrabStatus()
+    {
+        grabbedBlock = null; isGrabbing = false;
         if (movementScript != null) movementScript.moveSpeed = originalSpeed;
     }
 
     public void HandleLaserHit()
     {
+        if (hasChosenPersist) return;
+        isChoicePending = false;
         if (grabbedBlock != null)
         {
-            GameObject blockToReset = grabbedBlock;
-            ReleaseBlock();
-            if (blockHomePositions.ContainsKey(blockToReset))
-                blockToReset.transform.position = blockHomePositions[blockToReset];
+            grabbedBlock.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
+            if (blockHomePositions.ContainsKey(grabbedBlock)) grabbedBlock.transform.position = blockHomePositions[grabbedBlock];
+            ResetGrabStatus();
         }
         if (resetPoint != null) transform.position = resetPoint.position;
     }
@@ -106,5 +216,15 @@ public class FinalChapterManager : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Laser")) HandleLaserHit();
+        if (other.CompareTag("Exit")) isNearDoor = true;
+    }
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.CompareTag("Exit"))
+        {
+            isNearDoor = false;
+            isMessageShown = false;
+        }
     }
 }
