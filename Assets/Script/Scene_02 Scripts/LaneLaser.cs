@@ -20,6 +20,8 @@ public class FinalChapterLaser : MonoBehaviour
     private Collider2D laserCollider;
     private SpriteRenderer laserRenderer;
 
+    public GameManager SpManager;
+
     // Victor'un 6 repliði
     private string[] victorQuotes = {
         "Hassasiyetin zayýf Ethan.",
@@ -83,17 +85,43 @@ public class FinalChapterLaser : MonoBehaviour
             laserRenderer.enabled = true;
             laserCollider.enabled = true;
             yield return new WaitForSeconds(0.25f);
+
+            laserRenderer.enabled = false;
+            laserCollider.enabled = false;
+            yield return new WaitForSeconds(0.10f);
+
+            laserRenderer.enabled = true;
+            laserCollider.enabled = true;
+            yield return new WaitForSeconds(0.1f);
+
+            laserRenderer.enabled = false;
+            laserCollider.enabled = false;
+            yield return new WaitForSeconds(0.025f);
+
+            laserRenderer.enabled = true;
+            laserCollider.enabled = true;
+            yield return new WaitForSeconds(0.010f);
+
+            laserRenderer.enabled = false;
+            laserCollider.enabled = false;
+            yield return new WaitForSeconds(0.0025f);
+
+            laserRenderer.enabled = true;
+            laserCollider.enabled = true;
+            yield return new WaitForSeconds(0.010f);
         }
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
         // Ethan veya blok deðerse her þey baþa döner.
-        if (other.CompareTag("Player") || other.CompareTag("Block"))
+        if (other.CompareTag("Player") || other.CompareTag("Laser"))
         {
             // Victor konuþur.
             string quote = victorQuotes[Random.Range(0, victorQuotes.Length)];
             Debug.Log("<color=red>Victor:</color> " + quote);
+
+            SpManager.SadakatPuani -= 1;
 
             // Ethan'ý baþlangýca salla.
             if (player != null && resetPoint != null)
