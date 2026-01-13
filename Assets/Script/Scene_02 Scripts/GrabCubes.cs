@@ -88,13 +88,12 @@ public class FinalChapterMaster : MonoBehaviour
 
     IEnumerator VictorChoiceSequence()
     {
-        player.canMove = false; // Ethan durdu
+        player.canMove = false;
         Debug.Log("Victor: Ethan, bu son hücrenin enerjisi dengesiz. Eðer þimdi býrakmazsan ufak bir þok alabilirsin. Ama testi bitirirsen kusursuz bir koordinasyon sergilemiþ olacaksýn. Devam edecekmisin?");
+        yield return new WaitForSeconds(3f);
         Debug.Log("[F] Býrak ya da Devam Et");
-
-        yield return new WaitForSeconds(3f); // 3 saniye bekleme
-
-        player.canMove = true; // Hareket açýldý
+        yield return new WaitForSeconds(2f);
+        player.canMove = true;
     }
 
     void TryGrabBlock()
