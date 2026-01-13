@@ -224,6 +224,13 @@ public class FinalChapterMaster : MonoBehaviour
     {
         if (other.CompareTag("Laser")) HandleLaserHit();
         if (other.CompareTag("Exit")) isNearDoor = true;
+        if (Input.GetKey(KeyCode.E))
+        {
+            player.canMove = false;
+
+            Rigidbody2D rb = player.GetComponent<Rigidbody2D>();
+            if (rb != null) rb.linearVelocity = Vector2.zero;
+        }
     }
 
     private void OnTriggerExit2D(Collider2D other)
