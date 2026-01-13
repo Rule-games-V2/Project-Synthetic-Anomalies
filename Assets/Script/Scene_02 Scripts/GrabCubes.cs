@@ -23,6 +23,7 @@ public class FinalChapterMaster : MonoBehaviour
     public bool isChoicePending = false;
     private bool choiceMessageSent = false;
     public bool hasChosenPersist = false;
+    private bool hasChoiceTriggered = false; // TEK SEFERLÝK TETÝKLEYÝCÝ
 
     [Header("Durum")]
     public GameObject grabbedBlock;
@@ -82,13 +83,18 @@ public class FinalChapterMaster : MonoBehaviour
 
         if (isGrabbing && grabbedBlock != null)
         {
-            grabbedBlock.transform.position = transform.position + (transform.right * 1.1f);
+            float dir = transform.localScale.x > 0 ? 0.6f : -0.6f;
+            grabbedBlock.transform.position = transform.position + new Vector3(dir, 0, 0);
         }
     }
 
     IEnumerator VictorChoiceSequence()
     {
         player.canMove = false;
+
+        Rigidbody2D rb = player.GetComponent<Rigidbody2D>();
+        if (rb != null) rb.linearVelocity = Vector2.zero;
+
         Debug.Log("Victor: Ethan, bu son hücrenin enerjisi dengesiz. Eðer þimdi býrakmazsan ufak bir þok alabilirsin. Ama testi bitirirsen kusursuz bir koordinasyon sergilemiþ olacaksýn. Devam edecekmisin?");
         yield return new WaitForSeconds(3f);
         Debug.Log("[F] Býrak ya da Devam Et");
@@ -110,10 +116,11 @@ public class FinalChapterMaster : MonoBehaviour
             rb.bodyType = RigidbodyType2D.Kinematic;
             rb.linearVelocity = Vector2.zero;
 
-            if (placedBlocksCount == 2)
+            if (placedBlocksCount == 2 && !hasChoiceTriggered)
             {
                 isChoicePending = true;
                 choiceMessageSent = false;
+                hasChoiceTriggered = true;
                 FinalChapterLaser[] lasers = Object.FindObjectsByType<FinalChapterLaser>(FindObjectsSortMode.None);
                 foreach (var l in lasers) l.speed = Mathf.Max(0.2f, l.speed - 0.5f);
             }
@@ -203,6 +210,7 @@ public class FinalChapterMaster : MonoBehaviour
     {
         if (hasChosenPersist) return;
         isChoicePending = false;
+
         if (grabbedBlock != null)
         {
             grabbedBlock.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
